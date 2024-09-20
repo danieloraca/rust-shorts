@@ -62,3 +62,27 @@ fn main() {
     println!("{}", vechicle3);
     println!("{}", vechicle4);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_vechicle_type_display() {
+        assert_eq!(format!("{}", VechicleType::Car), "Car");
+        assert_eq!(format!("{}", VechicleType::Motorcycle), "Motorcycle");
+        assert_eq!(format!("{}", VechicleType::Truck), "Truck");
+        assert_eq!(format!("{}", VechicleType::Van), "Van");
+    }
+
+    #[test]
+    fn test_vechicle_display() {
+        let vechicle: Vechicle = Vechicle {
+            vechicle_type: VechicleType::Car,
+            year: 2019,
+            make: String::from("Toyota"),
+        };
+
+        assert_eq!(format!("{}", vechicle), "Car 2019 Toyota");
+    }
+}

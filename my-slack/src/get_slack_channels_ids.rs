@@ -29,6 +29,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .send()
         .await?;
 
+    // println!("{:?}", response);
+
     // Parse the response into the SlackChannelListResponse struct
     let channel_list: SlackChannelListResponse = response.json().await?;
 

@@ -28,7 +28,7 @@ struct SlackMessage {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let slack_token = env::var("SLACK_BOT_TOKEN")?;
-    let user_id = "U01SW5S799S"; // Replace with DynamoDan's user ID
+    let user_id = "U01SW5S799S";
 
     let client = Client::new();
 
@@ -55,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // Step 2: Send a message to the opened DM channel
             let message = SlackMessage {
                 channel: channel.id,  // Use the channel ID returned by conversations.open
-                text: "Hello DynamoDan from Rust!".to_string(),
+                text: "Hello DynamoDan from Rust again!".to_string(),
             };
 
             let response = client

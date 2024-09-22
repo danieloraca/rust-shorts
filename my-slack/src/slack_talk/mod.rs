@@ -21,6 +21,17 @@ struct Users {
     users: Vec<User>,
 }
 
+impl Users {
+    pub fn show_all(&self) -> String {
+        let mut output = String::new();
+        for user in &self.users {
+            output.push_str(&format!("ID: {}, Name: {}\n", user.id, user.name));
+        }
+
+        output
+    }
+}
+
 #[derive(Serialize)]
 struct Channel {
     id: String,
@@ -112,7 +123,7 @@ pub async fn get_slack_users() -> Result<String, Box<dyn Error>> {
             users.users.push(user);
         }
 
-        let serialized = serde_json::to_string_pretty(&users).unwrap();
+        let serialized = users.show_all();
         Ok(serialized)
     } else {
         Ok("Failed to retrieve users.".to_string())

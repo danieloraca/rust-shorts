@@ -21,11 +21,13 @@ struct Users {
     users: Vec<User>,
 }
 
+#[derive(Serialize)]
 struct Channel {
     id: String,
     name: String,
 }
 
+#[derive(Serialize)]
 struct Channels {
     channels: Vec<Channel>,
 }
@@ -66,14 +68,16 @@ pub async fn get_slack_channels() -> Result<String, Box<dyn Error>> {
 
     let channel_list: SlackChannelListResponse = response.json().await?;
 
-    let mut channel_names = String::new();
     if channel_list.ok {
+        let mut channel_names = Channels { channels: vec![] };
         let channels = channel_list.channels;
         for channel in channels {
-            channel_names.push_str(&format!(
-                "Channel ID: {}, Name: {}\n",
-                channel.id, channel.name
-            ));
+            let channel = Channel {
+                id: channel.id,
+                name: channel.name,
+            };
+
+            channel_names.channels.push(channel);
         }
 
         let serialized = serde_json::to_string_pretty(&channel_names).unwrap();

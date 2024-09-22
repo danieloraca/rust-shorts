@@ -1,6 +1,6 @@
-use reqwest::Client;
+mod menu;
+
 use serde::{Deserialize, Serialize};
-use std::env;
 
 #[derive(Serialize)]
 struct SlackMessage {
@@ -9,33 +9,35 @@ struct SlackMessage {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Retrieve the Slack Bot Token from environment variables
-    let slack_token = env::var("SLACK_BOT_TOKEN")?;
+async fn main() -> () {
+    menu::show_menu().await;
 
-    // Replace with the actual channel ID you want to send a message to
-    let channel_id = "U01SW5S799S"; // Example channel ID
+    // // Retrieve the Slack Bot Token from environment variables
+    // let slack_token = env::var("SLACK_BOT_TOKEN")?;
 
-    // Initialize the HTTP client
-    let client = Client::new();
+    // // Replace with the actual channel ID you want to send a message to
+    // let channel_id = "U01SW5S799S"; // Example channel ID
 
-    // Define the message payload
-    let message = SlackMessage {
-        channel: channel_id.to_string(),
-        text: "Hello, channel from Rust2!".to_string(),
-    };
+    // // Initialize the HTTP client
+    // let client = Client::new();
 
-    // Send the POST request to Slack's chat.postMessage API
-    let response = client
-        .post("https://slack.com/api/chat.postMessage")
-        .bearer_auth(slack_token)
-        .json(&message)
-        .send()
-        .await?;
+    // // Define the message payload
+    // let message = SlackMessage {
+    //     channel: channel_id.to_string(),
+    //     text: "Hello, channel from Rust2!".to_string(),
+    // };
 
-    // Check the response from Slack
-    let response_text = response.text().await?;
-    println!("Send Message Response: {}", response_text);
+    // // Send the POST request to Slack's chat.postMessage API
+    // let response = client
+    //     .post("https://slack.com/api/chat.postMessage")
+    //     .bearer_auth(slack_token)
+    //     .json(&message)
+    //     .send()
+    //     .await?;
 
-    Ok(())
+    // // Check the response from Slack
+    // let response_text = response.text().await?;
+    // println!("Send Message Response: {}", response_text);
+
+    // Ok(())
 }

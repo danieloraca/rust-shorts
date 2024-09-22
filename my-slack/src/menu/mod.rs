@@ -1,8 +1,14 @@
 use dialoguer::{theme::ColorfulTheme, Select};
 use reqwest::Client;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::error::Error;
+
+#[derive(Serialize)]
+struct SlackMessage {
+    channel: String,
+    text: String,
+}
 
 #[derive(Deserialize, Debug)]
 struct SlackChannel {
@@ -29,22 +35,15 @@ struct SlackUserListResponse {
 }
 
 pub async fn get_slack_channels() -> Result<String, Box<dyn Error>> {
-    // Retrieve the Slack Bot Token from environment variables
     let slack_token = env::var("SLACK_BOT_TOKEN")?;
-
-    // Initialize the HTTP client
     let client = Client::new();
 
-    // Send a GET request to Slack's conversations.list API to get all channels
     let response = client
         .get("https://slack.com/api/conversations.list")
         .bearer_auth(slack_token)
         .send()
         .await?;
 
-    // println!("{:?}", response);
-
-    // Parse the response into the SlackChannelListResponse struct
     let channel_list: SlackChannelListResponse = response.json().await?;
 
     let mut channel_names = String::new();
@@ -57,7 +56,8 @@ pub async fn get_slack_channels() -> Result<String, Box<dyn Error>> {
             ));
         }
 
-        Ok(channel_names)
+        let serialized = serde_json::to_string_pretty(&channel_names).unwrap();
+        Ok(serialized)
     } else {
         Ok("Failed to retrieve channels.".to_string())
     }
@@ -65,11 +65,8 @@ pub async fn get_slack_channels() -> Result<String, Box<dyn Error>> {
 
 pub async fn get_slack_users() -> Result<String, Box<dyn Error>> {
     let slack_token = env::var("SLACK_BOT_TOKEN")?;
-
-    // Initialize the HTTP client
     let client = Client::new();
 
-    // Send a GET request to Slack's users.list API
     let response = client
         .get("https://slack.com/api/users.list")
         .bearer_auth(slack_token)
@@ -86,27 +83,27 @@ pub async fn get_slack_users() -> Result<String, Box<dyn Error>> {
             user_names.push_str(&format!("User ID: {}, Name: {}\n", user.id, user.name));
         }
 
+        let serialized = serde_json::to_string_pretty(&user_names).unwrap();
         Ok(user_names)
     } else {
         Ok("Failed to retrieve users.".to_string())
     }
 }
 
-pub async fn send_message() -> Result<String, Box<dyn Error>> {
+pub async fn send_message(user_id: String, message_text: String) -> Result<String, Box<dyn Error>> {
     let slack_token = env::var("SLACK_BOT_TOKEN")?;
-    let slack_channel = env::var("SLACK_CHANNEL_ID")?;
-    let slack_user = env::var("SLACK_USER_ID")?;
 
     let client = Client::new();
+
+    let message = SlackMessage {
+        channel: user_id.to_string(),
+        text: message_text.to_string(),
+    };
 
     let response = client
         .post("https://slack.com/api/chat.postMessage")
         .bearer_auth(slack_token)
-        .form(&[
-            ("channel", slack_channel),
-            ("text", "Hello from Rust!".to_string()),
-            ("user", slack_user),
-        ])
+        .json(&message)
         .send()
         .await?;
 
@@ -148,7 +145,21 @@ pub async fn show_menu() -> () {
             }
             2 => {
                 println!("Option 2!");
-                match send_message().await {
+                // ask for user id in console
+
+                let user_id: String = dialoguer::Input::new()
+                    .with_prompt("Enter User ID")
+                    .interact()
+                    .unwrap();
+                println!("User ID: {}", user_id);
+
+                let message_text: String = dialoguer::Input::new()
+                    .with_prompt("Enter Message")
+                    .interact()
+                    .unwrap();
+                println!("Message: {}", message_text);
+
+                match send_message(user_id, message_text).await {
                     Ok(result) => println!("Result: {:?}", result),
                     Err(e) => println!("Error: {:?}", e),
                 }

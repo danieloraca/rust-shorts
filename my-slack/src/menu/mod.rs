@@ -22,14 +22,14 @@ pub async fn show_menu() -> () {
             0 => {
                 println!("Option 0!");
                 match slack_talk::get_slack_channels().await {
-                    Ok(result) => println!("Result: {:?}", result),
+                    Ok(result) => println!("Result: {}", result),
                     Err(e) => println!("Error: {:?}", e),
                 }
             }
             1 => {
                 println!("Option 1!");
                 match slack_talk::get_slack_users().await {
-                    Ok(result) => println!("Result: {:?}", result),
+                    Ok(result) => println!("Result: {}", result),
                     Err(e) => println!("Error: {:?}", e),
                 }
             }
@@ -49,7 +49,7 @@ pub async fn show_menu() -> () {
                 println!("Message: {}", message_text);
 
                 match slack_talk::send_message(user_id, message_text).await {
-                    Ok(result) => println!("Result: {:?}", result),
+                    Ok(result) => println!("Result: {}", result),
                     Err(e) => println!("Error: {:?}", e),
                 }
             }

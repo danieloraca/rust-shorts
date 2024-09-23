@@ -1,4 +1,4 @@
-# CLI command ro talk to slack
+# CLI command to talk to slack
 
 ## Get the list of channels
 

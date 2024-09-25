@@ -1,6 +1,4 @@
-// credit : https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/second-edition/ch20-01-single-threaded.html
-
-use banner::owl;
+use banner::crt_image;
 use chrono::Local;
 use std::fs::File;
 use std::io::prelude::*;
@@ -74,8 +72,7 @@ fn time_function() -> (String, String) {
 
 fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080")?;
-    // show 'owl' banner
-    let _ = owl();
+    let _ = crt_image();
 
     for stream in listener.incoming() {
         match stream {

@@ -1,4 +1,4 @@
-pub fn owl() -> std::io::Result<()> {
+pub fn crt_image() -> std::io::Result<()> {
     println!("Server listening on port 8080");
     let banner = format!(r#"--------"#);
 

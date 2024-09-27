@@ -8,6 +8,10 @@ on:
     paths:
       - "make-me-impl/**"
 
+defaults:
+  run:
+    working-directory: make-me-impl
+
 env:
   CARGO_TERM_COLOR: always
 

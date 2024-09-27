@@ -17,6 +17,7 @@ env:
 
 jobs:
   build:
+    name: Build Make Me Impl
     runs-on: ubuntu-latest
 
     steps:
@@ -37,9 +38,6 @@ jobs:
             echo "Tests failed"
             exit 1
           fi
-
-      # - name: Check for clippy warnings
-      #   run: cargo clippy -- -D warnings
 
       - name: Check for formatting errors
         run: cargo fmt -- --check

@@ -18,7 +18,7 @@ env:
 
 jobs:
   build-make-me-impl:
-    name: Build Make Me Impl
+    name: Make Me Impl
     runs-on: ubuntu-latest
 
     steps:

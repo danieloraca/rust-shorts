@@ -1,4 +1,4 @@
-[![Rust](https://github.com/danieloraca/rust-shorts/actions/workflows/make-me-impl/rust.yml/badge.svg)](https://github.com/danieloraca/rust-shorts/actions/workflows/make-me-impl/rust.yml)
+[![Rust](https://github.com/danieloraca/rust-shorts/actions/workflows/rust.yml/badge.svg)](https://github.com/danieloraca/rust-shorts/actions/workflows/rust.yml)
 
 # Output
 

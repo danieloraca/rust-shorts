@@ -43,10 +43,45 @@ fn bttree_map_example() {
     }
 }
 
-fn main() -> std::io::Result<()> {
-    // btree_set_example();
+fn btreemap_speed() {
+    let mut map = BTreeMap::new();
 
+    for i in 0..1_000_000 {
+        map.insert(i, i);
+    }
+
+    let start = std::time::Instant::now();
+    for i in 0..1_000_000 {
+        map.get(&i);
+    }
+    println!("BTreeMap get: {:?}", start.elapsed());
+}
+
+fn array_speed() {
+    let mut array = [0; 1_000_000];
+
+    let start = std::time::Instant::now();
+    for i in 0..1_000_000 {
+        array[i] = i;
+    }
+    println!("Array write time: {:?}", start.elapsed());
+
+    let sum: usize = array.iter().sum();
+    println!("Sum: {}", sum);
+}
+
+fn main() -> std::io::Result<()> {
+    println!("BTreeSet Example");
+    btree_set_example();
+
+    println!("BTreeMap Example");
     bttree_map_example();
+
+    println!("BTreeMap Speed");
+    btreemap_speed();
+
+    println!("Array Speed");
+    array_speed();
 
     Ok(())
 }

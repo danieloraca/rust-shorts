@@ -1,4 +1,4 @@
-name: makeMeImpl
+name: Rust
 
 on:
   push:

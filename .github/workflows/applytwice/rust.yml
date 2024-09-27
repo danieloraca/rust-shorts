@@ -10,7 +10,7 @@ on:
 
 defaults:
   run:
-    working-directory: apply-twice
+    working-directory: ../apply-twice
 
 env:
   CARGO_TERM_COLOR: always

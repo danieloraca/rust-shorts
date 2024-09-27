@@ -20,7 +20,7 @@ fn handle_connection(mut stream: TcpStream) {
     // root
     let (status_line, content) = if buffer.starts_with(get) {
         println!("GET /");
-        if let Ok(mut file) = File::open("hello.html") {
+        if let Ok(mut file) = File::open("./public/hello.html") {
             file.read_to_string(&mut html_content).unwrap();
             (
                 "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n".to_string(),

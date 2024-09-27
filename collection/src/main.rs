@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 fn btree_set_example() {
@@ -20,8 +21,32 @@ fn btree_set_example() {
     }
 }
 
+fn bttree_map_example() {
+    let mut map = BTreeMap::new();
+
+    // Insert some key-value pairs
+    map.insert(3, "three");
+    map.insert(1, "one");
+    map.insert(2, "two");
+
+    println!("{:?}", map);
+
+    if let Some(value) = map.get(&2) {
+        println!("The value for key 2 is: {}", value);
+    }
+
+    map.remove(&1);
+    println!("{:?}", map);
+
+    for (key, value) in &map {
+        println!("Key: {}, Value: {}", key, value);
+    }
+}
+
 fn main() -> std::io::Result<()> {
-    btree_set_example();
+    // btree_set_example();
+
+    bttree_map_example();
 
     Ok(())
 }

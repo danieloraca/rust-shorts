@@ -1,4 +1,4 @@
-name: Rust
+name: Rust - Make Me Impl
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: Make Me Impl Rust
+name: Make-Me-Impl Rust
 
 on:
   push:
@@ -37,6 +37,9 @@ jobs:
             echo "Tests failed"
             exit 1
           fi
+
+      # - name: Check for clippy warnings
+      #   run: cargo clippy -- -D warnings
 
       - name: Check for formatting errors
         run: cargo fmt -- --check

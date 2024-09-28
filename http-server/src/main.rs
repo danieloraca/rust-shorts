@@ -4,7 +4,7 @@ use std::net::{TcpListener, TcpStream};
 use std::thread;
 
 use http_server::banner::crt_image;
-use http_server::informations::get_json_response;
+use http_server::informations::{build_large_json, get_json_response};
 use http_server::simple_functions::{sleep_function, time_function};
 
 fn handle_connection(mut stream: TcpStream) {
@@ -15,6 +15,7 @@ fn handle_connection(mut stream: TcpStream) {
     let sleep = b"GET /sleep HTTP/1.1\r\n";
     let time = b"GET /time HTTP/1.1\r\n";
     let json = b"GET /json HTTP/1.1\r\n";
+    let large_json = b"GET /large_json HTTP/1.1\r\n";
 
     let mut html_content = String::new();
 
@@ -46,6 +47,12 @@ fn handle_connection(mut stream: TcpStream) {
         (
             "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n".to_string(),
             get_json_response(),
+        )
+    } else if buffer.starts_with(large_json) {
+        println!("GET /large_json");
+        (
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n".to_string(),
+            build_large_json(),
         )
     } else {
         println!("GET /404");

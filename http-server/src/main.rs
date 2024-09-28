@@ -21,7 +21,7 @@ struct InformationList {
 }
 
 fn get_json_response() -> String {
-    let information_list: InformationList = InformationList {
+    let mut information_list: InformationList = InformationList {
         infos: vec![
             Information {
                 name: "Alice".to_string(),
@@ -38,9 +38,19 @@ fn get_json_response() -> String {
         ],
     };
 
-    let object = serde_json::to_value(&information_list).unwrap();
+    information_list.infos.push(Information {
+        name: "David".to_string(),
+        age: 35,
+    });
 
-    format!("{}\n", object)
+    match serde_json::to_value(&information_list) {
+        Ok(object) => {
+            format!("{}\n", object)
+        }
+        Err(e) => {
+            format!("{}\n", e)
+        }
+    }
 }
 
 fn handle_connection(mut stream: TcpStream) {

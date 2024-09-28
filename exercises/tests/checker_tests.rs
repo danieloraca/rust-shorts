@@ -1,4 +1,5 @@
-use exercises::{check, checker};
+use exercises::checker::check;
+use exercises::checker::checker;
 
 #[cfg(test)]
 mod tests {

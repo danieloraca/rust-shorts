@@ -1,4 +1,4 @@
-use exercises::{check, checker};
+use exercises::checker::checker;
 
 fn main() {
     checker();

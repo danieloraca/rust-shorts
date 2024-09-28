@@ -1,13 +1,11 @@
-use chrono::Local;
-use http_server::banner::crt_image;
-use http_server::informations::get_json_response;
 use std::fs::File;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 
-// mod banner;
-// mod informations;
+use http_server::banner::crt_image;
+use http_server::informations::get_json_response;
+use http_server::simple_functions::{sleep_function, time_function};
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
@@ -60,23 +58,6 @@ fn handle_connection(mut stream: TcpStream) {
     let response = format!("{}{}", status_line, content);
     stream.write_all(response.as_bytes()).unwrap();
     stream.flush().unwrap();
-}
-
-fn sleep_function() -> (String, String) {
-    std::thread::sleep(std::time::Duration::from_secs(5));
-    (
-        "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n".to_string(),
-        "Woke up from sleep!\n".to_string(),
-    )
-}
-
-fn time_function() -> (String, String) {
-    let now = Local::now();
-    let current_time = now.format("%Y-%m-%d %H:%M:%S").to_string();
-    (
-        "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n".to_string(),
-        format!("{}\n", current_time),
-    )
 }
 
 fn main() -> std::io::Result<()> {

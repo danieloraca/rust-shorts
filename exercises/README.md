@@ -1,13 +1,28 @@
 # Simple exercises
 
-## Exercise 1 - tuple check
-In the checker function, the tuple (1, 2) is matched against the pattern (x, _) | (_, x) with a guard if check(x):
+## Pattern Matching with Multiple Bindings and Guard Conditions in Rust
 
-The pattern (x, _) | (_, x) attempts to bind both elements of the tuple to x:
-First, it tries to match (x, _), binding x = 1.
-It then calls check(1), which prints 1 but returns false, so the first match fails.
-The second part of the pattern (_, x) binds x = 2.
-It then calls check(2), printing 2, but again check(2) returns false.
-Since both checks fail, the match proceeds to the default case (_), printing "4".
+This project demonstrates how Rust handles pattern matching with multiple bindings and guard conditions.
 
-Thus, the output sequence is: 1 2 4.
+## Overview
+
+The code consists of a function `check` that always returns `false` after printing its argument, and a `checker` function that uses a tuple `(1, 2)` with a pattern match. The match attempts to bind both elements of the tuple to a variable `x` and evaluates them using the `check` function. Since the `check` function always returns `false`, the match falls through to the default case, which prints `"4"`.
+
+### Code
+
+```rust
+fn check(x: i32) -> bool {
+    println!("{}", x);
+    false
+}
+
+fn checker() {
+    match (1, 2) {
+        (x, _) | (_, x) if check(x) => println!("3"),
+        _ => println!("4"),
+    }
+}
+
+fn main() {
+    checker();
+}

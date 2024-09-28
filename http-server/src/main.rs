@@ -1,11 +1,47 @@
 use banner::crt_image;
 use chrono::Local;
+use serde::{Deserialize, Serialize};
+use serde_json;
 use std::fs::File;
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 
 mod banner;
+
+#[derive(Serialize, Deserialize)]
+struct Information {
+    name: String,
+    age: u8,
+}
+
+#[derive(Serialize, Deserialize)]
+struct InformationList {
+    infos: Vec<Information>,
+}
+
+fn get_json_response() -> String {
+    let information_list: InformationList = InformationList {
+        infos: vec![
+            Information {
+                name: "Alice".to_string(),
+                age: 20,
+            },
+            Information {
+                name: "Bob".to_string(),
+                age: 25,
+            },
+            Information {
+                name: "Charlie".to_string(),
+                age: 30,
+            },
+        ],
+    };
+
+    let object = serde_json::to_value(&information_list).unwrap();
+
+    format!("{}\n", object)
+}
 
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
@@ -14,6 +50,7 @@ fn handle_connection(mut stream: TcpStream) {
     let get = b"GET / HTTP/1.1\r\n";
     let sleep = b"GET /sleep HTTP/1.1\r\n";
     let time = b"GET /time HTTP/1.1\r\n";
+    let json = b"GET /json HTTP/1.1\r\n";
 
     let mut html_content = String::new();
 
@@ -40,6 +77,12 @@ fn handle_connection(mut stream: TcpStream) {
     } else if buffer.starts_with(time) {
         println!("GET /time");
         time_function()
+    } else if buffer.starts_with(json) {
+        println!("GET /json");
+        (
+            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n".to_string(),
+            get_json_response(),
+        )
     } else {
         println!("GET /404");
         (

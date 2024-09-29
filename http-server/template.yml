@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  rust-sam-http-server
+
+  Sample SAM Template for rust-sam-http-server
+
+Globals:
+  Function:
+    Timeout: 3
+    Handler: bootstrap.is.the.handler
+    Runtime: provided.al2
+    MemorySize: 128
+    Architectures:
+      - arm64
+
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: rust-cargolambda
+    Properties:
+      CodeUri: .
+      Handler: bootstrap.is.the.handler
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:PLACEHOLDER_ACCOUNT_ID:layer:LambdaAdapterLayerArm64:17
+      Events:
+        RustApi:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: default
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: default
+
+Outputs:
+  ServerlessApi:
+    Description: "API Gateway endpoint URL for Prod stage for Put function"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"

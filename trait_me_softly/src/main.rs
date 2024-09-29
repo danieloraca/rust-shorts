@@ -38,9 +38,9 @@ fn main() {
     };
 
     let my_rectangle_area: f64 = my_rectangle.area();
-    let my_rectangle_perimiter: f32 = my_rectangle.perimeter();
+    let my_rectangle_perimeter: f32 = my_rectangle.perimeter();
 
     println!("My rectangle: {}", my_rectangle);
     println!("Area of my rectangle: {}", my_rectangle_area);
-    println!("Perimiter of my retangle: {}", my_rectangle_perimiter);
+    println!("Perimeter of my retangle: {}", my_rectangle_perimeter);
 }

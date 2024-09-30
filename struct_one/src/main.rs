@@ -9,5 +9,7 @@ fn main() {
     v.x += 1;
     S.x += 1;
 
-    println!("{}{}", v.x, S.x);
+    println!("v.x = {}; S.x = {}", v.x, S.x);
+    S.x += 1;
+    println!("Original constant S.x = {}", S.x);
 }

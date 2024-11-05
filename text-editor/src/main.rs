@@ -2,7 +2,6 @@ use macroquad::prelude::*;
 use rodio::{Decoder, OutputStream, Sink};
 use std::io::Cursor;
 
-// Structure to represent a particle
 struct Particle {
     position: Vec2,
     velocity: Vec2,
@@ -18,35 +17,130 @@ impl Particle {
 
     fn draw(&self) {
         if self.lifetime > 0.0 {
-            draw_circle(self.position.x, self.position.y, 5.0, self.color);
+            draw_circle(self.position.x, self.position.y, 2.0, self.color);
         }
     }
 }
 
-#[macroquad::main("Explosion Editor")]
+fn any_key_pressed() -> Option<char> {
+    if is_key_pressed(KeyCode::A) {
+        return Some('A');
+    }
+    if is_key_pressed(KeyCode::B) {
+        return Some('B');
+    }
+    if is_key_pressed(KeyCode::C) {
+        return Some('C');
+    }
+    if is_key_pressed(KeyCode::D) {
+        return Some('D');
+    }
+    if is_key_pressed(KeyCode::E) {
+        return Some('E');
+    }
+    if is_key_pressed(KeyCode::F) {
+        return Some('F');
+    }
+    if is_key_pressed(KeyCode::G) {
+        return Some('G');
+    }
+    if is_key_pressed(KeyCode::H) {
+        return Some('H');
+    }
+    if is_key_pressed(KeyCode::I) {
+        return Some('I');
+    }
+    if is_key_pressed(KeyCode::J) {
+        return Some('J');
+    }
+    if is_key_pressed(KeyCode::K) {
+        return Some('K');
+    }
+    if is_key_pressed(KeyCode::L) {
+        return Some('L');
+    }
+    if is_key_pressed(KeyCode::M) {
+        return Some('M');
+    }
+    if is_key_pressed(KeyCode::N) {
+        return Some('N');
+    }
+    if is_key_pressed(KeyCode::O) {
+        return Some('O');
+    }
+    if is_key_pressed(KeyCode::P) {
+        return Some('P');
+    }
+    if is_key_pressed(KeyCode::Q) {
+        return Some('Q');
+    }
+    if is_key_pressed(KeyCode::R) {
+        return Some('R');
+    }
+    if is_key_pressed(KeyCode::S) {
+        return Some('S');
+    }
+    if is_key_pressed(KeyCode::T) {
+        return Some('T');
+    }
+    if is_key_pressed(KeyCode::U) {
+        return Some('U');
+    }
+    if is_key_pressed(KeyCode::V) {
+        return Some('V');
+    }
+    if is_key_pressed(KeyCode::W) {
+        return Some('W');
+    }
+    if is_key_pressed(KeyCode::X) {
+        return Some('X');
+    }
+    if is_key_pressed(KeyCode::Y) {
+        return Some('Y');
+    }
+    if is_key_pressed(KeyCode::Z) {
+        return Some('Z');
+    }
+    if is_key_pressed(KeyCode::Space) {
+        return Some(' ');
+    }
+
+    None
+}
+
+#[macroquad::main("Cursor Explosion Editor")]
 async fn main() {
     let particles_per_keypress = 20;
     let mut particles: Vec<Particle> = Vec::new();
+    let mut text_buffer = String::new(); // Buffer to store typed characters
 
-    // Set up audio
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let explosion_sound = include_bytes!("explosion_sound.mp3"); // Your explosion sound file
+    let explosion_sound = include_bytes!("explosion_sound.mp3");
     let explosion_cursor = Cursor::new(explosion_sound.to_vec());
 
+    let font_size = 30.0;
+    let text_start_x = 50.0;
+    let text_start_y = 100.0;
+
     loop {
-        // Check for keypress
-        if is_key_pressed(KeyCode::Space) {
-            // Trigger explosion effect with particles
+        // Check for key press and add character to text buffer
+        if let Some(character) = any_key_pressed() {
+            text_buffer.push(character);
+
+            // Calculate the explosion position based on the latest character position
+            let text_width = measure_text(&text_buffer, None, font_size as u16, 1.0).width;
+            let explosion_position = vec2(text_start_x + text_width, text_start_y);
+
             for _ in 0..particles_per_keypress {
                 let angle = rand::gen_range(0.0, 2.0 * std::f32::consts::PI);
                 let speed = rand::gen_range(50.0, 150.0);
                 particles.push(Particle {
-                    position: vec2(screen_width() / 2.0, screen_height() / 2.0),
+                    position: explosion_position,
                     velocity: vec2(angle.cos() * speed, angle.sin() * speed),
                     color: Color::new(
-                        rand::gen_range(0.5, 1.0),
-                        rand::gen_range(0.5, 1.0),
-                        rand::gen_range(0.5, 1.0),
+                        rand::gen_range(0.7, 1.0),
+                        rand::gen_range(0.3, 0.9),
+                        rand::gen_range(0.3, 0.9),
                         1.0,
                     ),
                     lifetime: rand::gen_range(0.5, 1.5),
@@ -57,7 +151,7 @@ async fn main() {
             let sound_cursor = explosion_cursor.clone();
             let sink = Sink::try_new(&stream_handle).unwrap();
             sink.append(Decoder::new(sound_cursor).unwrap());
-            sink.detach(); // Detach so it plays independently
+            sink.detach();
         }
 
         // Update and draw particles
@@ -68,6 +162,9 @@ async fn main() {
             particle.draw();
         }
         particles.retain(|p| p.lifetime > 0.0);
+
+        // Draw the text buffer
+        draw_text(&text_buffer, text_start_x, text_start_y, font_size, WHITE);
 
         next_frame().await;
     }

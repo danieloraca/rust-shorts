@@ -2,6 +2,8 @@ use macroquad::prelude::*;
 use rodio::{Decoder, OutputStream, Sink};
 use std::io::Cursor;
 
+const CURSOR_BLINK_INTERVAL: f32 = 0.5; // Blink interval in seconds
+
 struct Particle {
     position: Vec2,
     velocity: Vec2,
@@ -178,7 +180,16 @@ async fn main() {
     let text_start_x = 40.0;
     let text_start_y = 50.0;
 
+    let mut cursor_visible = true;
+    let mut cursor_timer = 0.0;
+
     loop {
+        cursor_timer += get_frame_time();
+        if cursor_timer >= CURSOR_BLINK_INTERVAL {
+            cursor_visible = !cursor_visible;
+            cursor_timer = 0.0;
+        }
+
         if is_key_pressed(KeyCode::Backspace) && !text_buffer.is_empty() {
             let sound_cursor = delete_cursor.clone();
             let sink = Sink::try_new(&stream_handle).unwrap();
@@ -250,6 +261,17 @@ async fn main() {
         // Draw the text buffer
         draw_text(&text_buffer, text_start_x, text_start_y, font_size, WHITE);
 
+        if cursor_visible {
+            let text_width = measure_text(&text_buffer, None, font_size as u16, 1.0).width;
+            draw_line(
+                text_start_x + text_width,
+                text_start_y - font_size * 0.5,
+                text_start_x + text_width,
+                text_start_y,
+                2.0,
+                YELLOW,
+            );
+        }
         next_frame().await;
     }
 }

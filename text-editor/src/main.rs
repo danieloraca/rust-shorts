@@ -3,6 +3,8 @@ use rodio::{Decoder, OutputStream, Sink};
 use std::io::Cursor;
 
 const CURSOR_BLINK_INTERVAL: f32 = 0.5; // Blink interval in seconds
+const SCROLL_SPEED: f32 = 20.0; // Scroll speed per scroll input
+const MAX_VISIBLE_LINES: usize = 10; // Number of lines that can be visible without scrolling
 
 struct Particle {
     position: Vec2,
@@ -183,11 +185,28 @@ async fn main() {
     let mut cursor_visible = true;
     let mut cursor_timer = 0.0;
 
+    let mut scroll_offset = 0.0; // Vertical scroll position
+    let mut line_height = font_size * 1.0; // Height of each line
+
     loop {
         cursor_timer += get_frame_time();
         if cursor_timer >= CURSOR_BLINK_INTERVAL {
             cursor_visible = !cursor_visible;
             cursor_timer = 0.0;
+        }
+
+        // Handle scrolling up and down
+        if is_key_pressed(KeyCode::Up) {
+            scroll_offset += SCROLL_SPEED;
+            if scroll_offset > 0.0 {
+                scroll_offset = 0.0; // Prevent scrolling past the top
+            }
+        } else if is_key_pressed(KeyCode::Down) {
+            scroll_offset -= SCROLL_SPEED;
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            text_buffer.push('\n');
         }
 
         if is_key_pressed(KeyCode::Backspace) && !text_buffer.is_empty() {
@@ -222,9 +241,15 @@ async fn main() {
         if let Some(character) = any_key_pressed() {
             text_buffer.push(character);
 
-            // Calculate the explosion position based on the latest character position
-            let text_width = measure_text(&text_buffer, None, font_size as u16, 1.0).width;
-            let explosion_position = vec2(text_start_x + text_width, text_start_y);
+            // Split lines and calculate the explosion position based on the last line
+            let lines: Vec<&str> = text_buffer.split_inclusive('\n').collect();
+            let last_line = lines.last().unwrap_or(&"");
+            let text_width = measure_text(last_line.trim_end(), None, font_size as u16, 1.0).width;
+
+            let explosion_position = vec2(
+                text_start_x + text_width,
+                text_start_y + (lines.len() - 1) as f32 * line_height + scroll_offset,
+            );
 
             for _ in 0..particles_per_keypress {
                 let angle = rand::gen_range(0.0, 2.0 * std::f32::consts::PI);
@@ -259,19 +284,29 @@ async fn main() {
         particles.retain(|p| p.lifetime > 0.0);
 
         // Draw the text buffer
-        draw_text(&text_buffer, text_start_x, text_start_y, font_size, WHITE);
+        // draw_text(&text_buffer, text_start_x, text_start_y, font_size, WHITE);
+
+        let lines: Vec<&str> = text_buffer.split_inclusive('\n').collect();
+        for (i, line) in lines.iter().enumerate() {
+            let y_position = text_start_y + i as f32 * line_height + scroll_offset;
+            draw_text(line.trim_end(), text_start_x, y_position, font_size, WHITE);
+            // trim_end to avoid extra space
+        }
 
         if cursor_visible {
-            let text_width = measure_text(&text_buffer, None, font_size as u16, 1.0).width;
+            let last_line = lines.last().unwrap_or(&"");
+            let text_width = measure_text(last_line.trim_end(), None, font_size as u16, 1.0).width;
+            let cursor_y = text_start_y + (lines.len() - 1) as f32 * line_height + scroll_offset;
             draw_line(
                 text_start_x + text_width,
-                text_start_y - font_size * 0.5,
+                cursor_y - font_size * 0.5,
                 text_start_x + text_width,
-                text_start_y,
+                cursor_y,
                 2.0,
                 YELLOW,
             );
         }
+
         next_frame().await;
     }
 }

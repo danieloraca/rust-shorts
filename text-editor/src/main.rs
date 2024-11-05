@@ -104,6 +104,60 @@ fn any_key_pressed() -> Option<char> {
     if is_key_pressed(KeyCode::Space) {
         return Some(' ');
     }
+    if is_key_pressed(KeyCode::Key1) {
+        return Some('1');
+    }
+    if is_key_pressed(KeyCode::Key2) {
+        return Some('2');
+    }
+    if is_key_pressed(KeyCode::Key3) {
+        return Some('3');
+    }
+    if is_key_pressed(KeyCode::Key4) {
+        return Some('4');
+    }
+    if is_key_pressed(KeyCode::Key5) {
+        return Some('5');
+    }
+    if is_key_pressed(KeyCode::Key6) {
+        return Some('6');
+    }
+    if is_key_pressed(KeyCode::Key7) {
+        return Some('7');
+    }
+    if is_key_pressed(KeyCode::Key8) {
+        return Some('8');
+    }
+    if is_key_pressed(KeyCode::Key9) {
+        return Some('9');
+    }
+    if is_key_pressed(KeyCode::Key0) {
+        return Some('0');
+    }
+    if is_key_pressed(KeyCode::Minus) {
+        return Some('-');
+    }
+    if is_key_pressed(KeyCode::Backslash) {
+        return Some('\\');
+    }
+    if is_key_pressed(KeyCode::LeftBracket) {
+        return Some('[');
+    }
+    if is_key_pressed(KeyCode::RightBracket) {
+        return Some(']');
+    }
+    if is_key_pressed(KeyCode::Semicolon) {
+        return Some(';');
+    }
+    if is_key_pressed(KeyCode::Comma) {
+        return Some(',');
+    }
+    if is_key_pressed(KeyCode::Period) {
+        return Some('.');
+    }
+    if is_key_pressed(KeyCode::Slash) {
+        return Some('/');
+    }
 
     None
 }
@@ -130,6 +184,27 @@ async fn main() {
             let sink = Sink::try_new(&stream_handle).unwrap();
             sink.append(Decoder::new(sound_cursor).unwrap());
             sink.detach();
+
+            // Calculate the explosion position for backspace
+            let text_width = measure_text(&text_buffer, None, font_size as u16, 1.0).width;
+            let explosion_position = vec2(text_start_x + text_width, text_start_y);
+
+            // Create backspace explosion particles with different characteristics
+            for _ in 0..particles_per_keypress {
+                let angle = rand::gen_range(0.0, 2.0 * std::f32::consts::PI);
+                let speed = rand::gen_range(70.0, 120.0); // Different speed range for backspace
+                particles.push(Particle {
+                    position: explosion_position,
+                    velocity: vec2(angle.cos() * speed, angle.sin() * speed),
+                    color: Color::new(
+                        rand::gen_range(0.9, 1.0), // Brighter color for backspace
+                        rand::gen_range(0.0, 0.2), // Lower green component for backspace
+                        rand::gen_range(0.0, 0.2), // Lower blue component for backspace
+                        1.0,
+                    ),
+                    lifetime: rand::gen_range(0.3, 0.7), // Shorter lifetime for backspace particles
+                });
+            }
             text_buffer.pop();
         }
         // Check for key press and add character to text buffer

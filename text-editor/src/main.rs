@@ -110,19 +110,28 @@ fn any_key_pressed() -> Option<char> {
 
 #[macroquad::main("Cursor Explosion Editor")]
 async fn main() {
-    let particles_per_keypress = 20;
+    let particles_per_keypress = 5;
     let mut particles: Vec<Particle> = Vec::new();
     let mut text_buffer = String::new(); // Buffer to store typed characters
 
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let explosion_sound = include_bytes!("explosion_sound.mp3");
+    let delete_sound = include_bytes!("delete_sound.mp3");
     let explosion_cursor = Cursor::new(explosion_sound.to_vec());
+    let delete_cursor = Cursor::new(delete_sound.to_vec());
 
     let font_size = 30.0;
-    let text_start_x = 50.0;
-    let text_start_y = 100.0;
+    let text_start_x = 40.0;
+    let text_start_y = 50.0;
 
     loop {
+        if is_key_pressed(KeyCode::Backspace) && !text_buffer.is_empty() {
+            let sound_cursor = delete_cursor.clone();
+            let sink = Sink::try_new(&stream_handle).unwrap();
+            sink.append(Decoder::new(sound_cursor).unwrap());
+            sink.detach();
+            text_buffer.pop();
+        }
         // Check for key press and add character to text buffer
         if let Some(character) = any_key_pressed() {
             text_buffer.push(character);
